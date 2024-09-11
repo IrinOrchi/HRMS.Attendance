@@ -1,4 +1,5 @@
-﻿using System;
+﻿using HRMS.Attendance.AggregrateRoot.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,5 +14,8 @@ namespace HRMS.Attendance.Repository
         Task Add(T entity);
         Task Update(T entity);
         Task Delete(int id);
+        IQueryable<T> GetQueryable(); // Add this method
+        Task<IEnumerable<ManageAttendence>> GetAttendancesForEmployee(int employeeId);
+        Task<IEnumerable<Holiday>> GetAllHolidays();
     }
 }

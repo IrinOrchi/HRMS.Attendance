@@ -1,0 +1,148 @@
+﻿@model IEnumerable<HRMS.Attendance.DTOs.LeaveRequestDto>
+
+@{
+    ViewData["Title"] = "Approved Leave Requests";
+}
+
+<style>
+    body {
+        background: linear-gradient(135deg, rgba(173, 216, 230, 0.7), rgba(135, 206, 250, 0.7)), url('your-animated-background.gif') no-repeat center center fixed;
+        background-size: cover;
+        font-family: 'Poppins', sans-serif;
+        color: #4B6587;
+    }
+
+    h1 {
+        color: #4B6587;
+        text-align: center;
+        margin-top: 30px;
+        font-weight: bold;
+        font-family: 'Montserrat', sans-serif;
+        animation: fadeInDown 1s ease-in-out;
+    }
+
+    .table {
+        background-color: #FFFFFF; /* White for high visibility */
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        margin-top: 20px;
+        animation: fadeInUp 1s ease-in-out;
+        color: #4B6587;
+    }
+
+        .table thead {
+            background-color: #A3D6D3; /* Soft mint green */
+            color: #4B6587;
+        }
+
+    .table-hover tbody tr:hover {
+        background-color: #D1EAE8; /* Lighter mint green */
+        transition: background-color 0.3s ease;
+    }
+
+    .btn-primary {
+        background-color: #D8B4FE; /* Lavender */
+        border-color: #D8B4FE;
+        transition: transform 0.3s ease-in-out, box-shadow 0.3s ease;
+        font-family: 'Poppins', sans-serif;
+    }
+
+        .btn-primary:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 15px rgba(216, 180, 254, 0.5);
+        }
+
+    .btn-danger {
+        background-color: #FFB6C1; /* Baby pink */
+        border-color: #FFB6C1;
+        transition: transform 0.3s ease-in-out, box-shadow 0.3s ease;
+        font-family: 'Poppins', sans-serif;
+    }
+
+        .btn-danger:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 15px rgba(255, 182, 193, 0.5);
+        }
+
+    /* Animations */
+    @@keyframes fadeInUp {
+        0% {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        100% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @@keyframes fadeInDown {
+        0% {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+
+        100% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Icon animation */
+    .icon {
+        font-size: 24px;
+        margin-right: 5px;
+        animation: spin 2s infinite linear;
+    }
+
+    @@keyframes spin {
+        0% {
+            transform: rotate(0deg);
+        }
+
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+</style>
+
+<div class="container">
+    <h1>Approved Leave Requests</h1>
+
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th><i class="fas fa-id-card icon"></i>ID</th>
+                <th><i class="fas fa-user icon"></i>Employee Name</th>
+                <th><i class="fas fa-building icon"></i>Department</th>
+                <th><i class="fas fa-calendar-alt icon"></i>Start Date</th>
+                <th><i class="fas fa-calendar-alt icon"></i>End Date</th>
+                <th><i class="fas fa-clipboard icon"></i>Reason</th>
+                <th><i class="fas fa-check-circle icon"></i>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var request in Model)
+            {
+                <tr>
+                    <td>@request.ID</td>
+                    <td>@request.EmployeeName</td>
+                    <td>@request.EmployeeDepartment</td>
+                    <td>@request.StartDate.ToShortDateString()</td>
+                    <td>@request.EndDate.ToShortDateString()</td>
+                    <td>@request.Reason</td>
+                    <td>@request.Status</td>
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@request.ID" class="btn btn-primary">Edit</a>
+                        <form asp-action="Delete" method="post" style="display:inline;">
+                            <input type="hidden" name="id" value="@request.ID" />
+                            <button type="submit" class="btn btn-danger">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

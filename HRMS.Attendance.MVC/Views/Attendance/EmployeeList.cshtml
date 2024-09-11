@@ -1,0 +1,104 @@
+﻿@using HRMS.Attendance.AggregrateRoot.Models
+@model IEnumerable<Employee>
+
+<style>
+    body {
+        background-color: #F8F9FA; /* Soft light background */
+        font-family: 'Poppins', sans-serif;
+        color: #4B6587;
+        padding: 20px;
+    }
+
+    h2 {
+        text-align: center;
+        color: #4B6587;
+        font-size: 2.5rem;
+        margin-bottom: 30px;
+        animation: fadeIn 1.5s ease-in-out;
+    }
+
+    .table {
+        background-color: #FFFFFF;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        border-radius: 10px;
+        margin-top: 20px;
+        width: 100%;
+        animation: fadeInUp 1.5s ease-in-out;
+    }
+
+    .table thead {
+        background-color: #A3D6D3; /* Soft mint green */
+        color: #4B6587;
+    }
+
+    .table tbody tr:hover {
+        background-color: #D1EAE8; /* Light mint green hover effect */
+    }
+
+    .btn {
+        font-family: 'Poppins', sans-serif;
+        border-radius: 50px;
+        padding: 10px 20px;
+        font-size: 14px;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .btn-primary {
+        background-color: #7D83FF; /* Lavender button */
+        border: none;
+        color: white;
+    }
+
+    .btn-primary:hover {
+        transform: scale(1.05);
+        box-shadow: 0 4px 15px rgba(125, 131, 255, 0.5);
+    }
+
+    @@keyframes fadeIn {
+        0% {
+            opacity: 0;
+        }
+        100% {
+            opacity: 1;
+        }
+    }
+
+    @@keyframes fadeInUp {
+        0% {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        100% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
+
+<div class="container">
+    <h2>Employee List</h2>
+
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Department</th>
+                <th>Mark Attendance</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var employee in Model)
+            {
+                <tr>
+                    <td>@employee.Name</td>
+                    <td>@employee.Department</td>
+                    <td>
+                        <form asp-action="MarkAttendance" asp-route-employeeId="@employee.ID" method="post">
+                            <button type="submit" class="btn btn-primary">Mark Attendance</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

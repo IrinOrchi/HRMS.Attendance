@@ -6,4 +6,9 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\HRMS.Attendance.DTOs\HRMS.Attendance.DTOs.csproj" />
+    <ProjectReference Include="..\HRMS.Attendance.Repository\HRMS.Attendance.Repository.csproj" />
+  </ItemGroup>
+
 </Project>

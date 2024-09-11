@@ -1,52 +1,64 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System;
+﻿using HRMS.Attendance.AggregrateRoot.Models;
+using HRMS.Attendance.Repository;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
-namespace HRMS.Attendance.Repository
+public class GenericRepository<T> : IGenericRepository<T> where T : class
 {
-    public class GenericRepository<T> : IGenericRepository<T> where T : class
+    private readonly ApplicationDbContext _context;
+    private readonly DbSet<T> _dbSet;
+
+    public GenericRepository(ApplicationDbContext context) 
     {
-        private readonly ApplicationDbContext _context;
-
-        public GenericRepository(ApplicationDbContext context)
-        {
-            _context = context;
-        }
-
-        public async Task<IEnumerable<T>> GetAll()
-        {
-            return await _context.Set<T>().ToListAsync();
-        }
-
-        public async Task<T> GetById(int id)
-        {
-            return await _context.Set<T>().FindAsync(id);
-        }
-
-        public async Task Add(T entity)
-        {
-            await _context.Set<T>().AddAsync(entity);
-            await _context.SaveChangesAsync();
-        }
-
-        public async Task Update(T entity)
-        {
-            _context.Set<T>().Update(entity);
-            await _context.SaveChangesAsync();
-        }
-
-        public async Task Delete(int id)
-        {
-            var entity = await GetById(id);
-            if (entity != null)
-            {
-                _context.Set<T>().Remove(entity);
-                await _context.SaveChangesAsync();
-            }
-        }
+        _context = context;
+        _dbSet = context.Set<T>();
     }
 
+    public async Task<IEnumerable<T>> GetAll()
+    {
+        return await _dbSet.ToListAsync();
+    }
+
+    public async Task<T> GetById(int id)
+    {
+        return await _dbSet.FindAsync(id);
+    }
+
+    public async Task Add(T entity)
+    {
+        await _dbSet.AddAsync(entity);
+        await _context.SaveChangesAsync();
+    }
+
+    public async Task Update(T entity)
+    {
+        _dbSet.Update(entity);
+        await _context.SaveChangesAsync();
+    }
+
+    public async Task Delete(int id)
+    {
+        var entity = await _dbSet.FindAsync(id);
+        if (entity != null)
+        {
+            _dbSet.Remove(entity);
+            await _context.SaveChangesAsync();
+        }
+    }
+    public async Task<IEnumerable<ManageAttendence>> GetAttendancesForEmployee(int employeeId)
+    {
+        return await _context.Set<ManageAttendence>().Where(a => a.EmployeeID == employeeId).ToListAsync();
+    }
+
+    public async Task<IEnumerable<Holiday>> GetAllHolidays()
+    {
+        return await _context.Set<Holiday>().ToListAsync();
+    }
+
+    public IQueryable<T> GetQueryable()
+    {
+        return _dbSet.AsQueryable();
+    }
 }

@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HRMS.Attendance.AggregrateRoot.Models
+namespace HRMS.Attendance.DTOs
 {
-    public class Employee
+    public class EmployeeDto
     {
         public int ID { get; set; }
         public required string Name { get; set; }
@@ -19,7 +19,5 @@ namespace HRMS.Attendance.AggregrateRoot.Models
         public string? Address { get; set; }
         public required string Phone { get; set; }
         public DateTime DateOfBirth { get; set; }
-
-        public virtual ICollection<LeaveRequest> LeaveRequests { get; set; }
     }
 }
