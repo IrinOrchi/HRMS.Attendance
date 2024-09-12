@@ -1,10 +1,11 @@
-﻿@using HRMS.Attendance.DTOs
-@model IEnumerable<AttendanceDto>
+﻿@model IEnumerable<HRMS.Attendance.DTOs.AttendanceDto>
 
-<h2>Attendance List</h2>
-<table class="table table-striped">
+<h2>Final Attendance List</h2>
+
+<table class="table">
     <thead>
         <tr>
+            <th>ID</th>
             <th>Employee Name</th>
             <th>Department</th>
             <th>In Time</th>
@@ -17,6 +18,7 @@
         @foreach (var attendance in Model)
         {
             <tr>
+                <td>@attendance.ID</td>
                 <td>@attendance.EmployeeName</td>
                 <td>@attendance.Department</td>
                 <td>@attendance.InTime</td>

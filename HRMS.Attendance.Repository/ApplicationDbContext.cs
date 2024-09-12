@@ -10,7 +10,7 @@ public class ApplicationDbContext : DbContext
 
     public DbSet<Employee> Employees { get; set; }
     public DbSet<LeaveRequest> LeaveRequests { get; set; }
-    public DbSet<ManageAttendence> ManageAttendences { get; set; }
+    public DbSet<ManageAttendance> ManageAttendences { get; set; }
     public DbSet<Holiday> Holidays { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

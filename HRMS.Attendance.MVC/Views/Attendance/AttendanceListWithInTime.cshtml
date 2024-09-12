@@ -1,0 +1,49 @@
+﻿@model IEnumerable<HRMS.Attendance.DTOs.AttendanceDto>
+
+<h2>Attendance List (With InTime)</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Employee Name</th>
+            <th>Department</th>
+            <th>In Time</th>
+            <th>Out Time</th>
+            <th>Total Working Hours</th>
+            <th>Status</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var attendance in Model)
+        {
+            <tr>
+                <td>@attendance.ID</td>
+                <td>@attendance.EmployeeName</td>
+                <td>@attendance.Department</td>
+                    <td>
+                    @if (attendance.Status != "Absent")
+                    {
+                        @attendance.InTime
+                    }
+                    </td>
+                <td>@attendance.OutTime</td>
+                <td>@attendance.TotalWorkingHours</td>
+                <td>@attendance.Status</td>
+                <td>
+                    @if (attendance.OutTime == null)
+                    {
+                        <form asp-action="ExitAttendance" method="post">
+                            <input type="hidden" name="attendanceId" value="@attendance.ID" />
+                            @if (attendance.Status == "Present")
+                            {
+                                <button type="submit" class="btn btn-primary">Exit Attendance</button>
+                            }
+                        </form>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

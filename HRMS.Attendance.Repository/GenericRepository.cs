@@ -47,9 +47,9 @@ public class GenericRepository<T> : IGenericRepository<T> where T : class
             await _context.SaveChangesAsync();
         }
     }
-    public async Task<IEnumerable<ManageAttendence>> GetAttendancesForEmployee(int employeeId)
+    public async Task<IEnumerable<ManageAttendance>> GetAttendancesForEmployee(int employeeId)
     {
-        return await _context.Set<ManageAttendence>().Where(a => a.EmployeeID == employeeId).ToListAsync();
+        return await _context.Set<ManageAttendance>().Where(a => a.EmployeeID == employeeId).ToListAsync();
     }
 
     public async Task<IEnumerable<Holiday>> GetAllHolidays()

@@ -15,7 +15,7 @@ namespace HRMS.Attendance.Repository
         Task Update(T entity);
         Task Delete(int id);
         IQueryable<T> GetQueryable(); // Add this method
-        Task<IEnumerable<ManageAttendence>> GetAttendancesForEmployee(int employeeId);
+        Task<IEnumerable<ManageAttendance>> GetAttendancesForEmployee(int employeeId);
         Task<IEnumerable<Holiday>> GetAllHolidays();
     }
 }

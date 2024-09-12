@@ -1,145 +1,36 @@
 ﻿@model IEnumerable<HRMS.Attendance.DTOs.LeaveRequestDto>
 
-@{
-    ViewData["Title"] = "Pending Leave Requests";
-}
-
-<style>
-    body {
-        background-color: #FFFFFF; /* Clean white background */
-        font-family: 'Poppins', sans-serif;
-        color: #4B6587;
-        padding: 20px;
-        animation: backgroundAnimation 15s ease-in-out infinite;
-    }
-
-    @@keyframes backgroundAnimation {
-        0% { background-position: 0% 50%; }
-        50% { background-position: 100% 50%; }
-        100% { background-position: 0% 50%; }
-    }
-
-    h1 {
-        text-align: center;
-        color: #4B6587;
-        font-size: 2.5rem;
-        margin-bottom: 30px;
-        animation: fadeIn 1.5s ease-in-out;
-    }
-
-    table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 20px;
-        background-color: #FFFFFF; /* Clean white for visibility */
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        border-radius: 10px;
-        animation: fadeInUp 1.5s ease-in-out;
-    }
-
-    thead {
-        background-color: #A3D6D3; /* Soft mint green */
-        color: #4B6587;
-    }
-
-    th, td {
-        padding: 15px;
-        text-align: center;
-    }
-
-    tbody tr {
-        transition: background-color 0.3s ease;
-    }
-
-    tbody tr:hover {
-        background-color: #D1EAE8; /* Light mint green on hover */
-    }
-
-    .btn {
-        font-family: 'Poppins', sans-serif;
-        border-radius: 50px;
-        padding: 10px 20px;
-        font-size: 14px;
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
-
-    .btn-success {
-        background-color: #7D83FF; /* Lavender */
-        border: none;
-        color: white;
-    }
-
-    .btn-danger {
-        background-color: #FF6B6B; /* Baby pink */
-        border: none;
-        color: white;
-    }
-
-    .btn:hover {
-        transform: scale(1.05);
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-    }
-
-    @@keyframes fadeInUp {
-        0% {
-            opacity: 0;
-            transform: translateY(30px);
-        }
-        100% {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
-    @@keyframes fadeIn {
-        0% {
-            opacity: 0;
-        }
-        100% {
-            opacity: 1;
-        }
-    }
-</style>
-
-<div class="container">
-    <h1>Pending Leave Requests</h1>
-
-    <table class="table">
-        <thead>
+<h2>Pending Leave Requests</h2>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Employee Name</th>
+            <th>Department</th>
+            <th>Start Date</th>
+            <th>End Date</th>
+            <th>Reason</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var request in Model)
+        {
             <tr>
-                <th>ID</th>
-                <th>Employee Name</th>
-                <th>Department</th>
-                <th>Start Date</th>
-                <th>End Date</th>
-                <th>Reason</th>
-                <th>Status</th>
-                <th>Actions</th>
+                <td>@request.EmployeeName</td>
+                <td>@request.EmployeeDepartment</td>
+                <td>@request.StartDate.ToShortDateString()</td>
+                <td>@request.EndDate.ToShortDateString()</td>
+                <td>@request.Reason</td>
+                <td>@request.Status</td>
+                <td>
+                    <form asp-action="Approve" method="post">
+                        <input type="hidden" name="id" value="@request.ID" />
+                        <button type="submit" class="btn btn-success">Approve</button>
+                    </form>
+                    <a asp-action="Delete" asp-route-id="@request.ID" class="btn btn-danger">Delete</a>
+                </td>
             </tr>
-        </thead>
-        <tbody>
-            @foreach (var request in Model)
-            {
-                <tr>
-                    <td>@request.ID</td>
-                    <td>@request.EmployeeName</td>
-                    <td>@request.EmployeeDepartment</td>
-                    <td>@request.StartDate.ToShortDateString()</td>
-                    <td>@request.EndDate.ToShortDateString()</td>
-                    <td>@request.Reason</td>
-                    <td>@request.Status</td>
-                    <td>
-                        <form asp-action="Approve" method="post" style="display:inline;">
-                            <input type="hidden" name="id" value="@request.ID" />
-                            <button type="submit" class="btn btn-success">Approve</button>
-                        </form>
-                        <form asp-action="Reject" method="post" style="display:inline;">
-                            <input type="hidden" name="id" value="@request.ID" />
-                            <button type="submit" class="btn btn-danger">Reject</button>
-                        </form>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
-</div>
+        }
+    </tbody>
+</table>

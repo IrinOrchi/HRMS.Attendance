@@ -19,47 +19,21 @@ public class LeaveRequestService : ILeaveRequestService
     public async Task<IEnumerable<LeaveRequestDto>> GetAllPendingRequests()
     {
         var pendingRequests = await _leaveRequestRepo.GetQueryable()
-            .Include(r => r.Employee) // Load Employee data
+            .Include(r => r.Employee)
             .Where(r => r.Status == "Pending")
             .ToListAsync();
 
-        // Manual mapping
-        var pendingRequestDtos = pendingRequests.Select(r => new LeaveRequestDto
-        {
-            ID = r.ID,
-            EmployeeID = r.EmployeeID,
-            EmployeeName = r.Employee?.Name ?? string.Empty,
-            EmployeeDepartment = r.Employee?.Department ?? string.Empty,
-            StartDate = r.StartDate,
-            EndDate = r.EndDate,
-            Reason = r.Reason,
-            Status = r.Status
-        });
-
-        return pendingRequestDtos;
+        return pendingRequests.Select(LeaveRequest.ToDto);
     }
 
     public async Task<IEnumerable<LeaveRequestDto>> GetAllApprovedRequests()
     {
         var approvedRequests = await _leaveRequestRepo.GetQueryable()
-            .Include(r => r.Employee) // Load Employee data
+            .Include(r => r.Employee)
             .Where(r => r.Status == "Approved")
             .ToListAsync();
 
-        // Manual mapping
-        var approvedRequestDtos = approvedRequests.Select(r => new LeaveRequestDto
-        {
-            ID = r.ID,
-            EmployeeID = r.EmployeeID,
-            EmployeeName = r.Employee?.Name ?? string.Empty,
-            EmployeeDepartment = r.Employee?.Department ?? string.Empty,
-            StartDate = r.StartDate,
-            EndDate = r.EndDate,
-            Reason = r.Reason,
-            Status = r.Status
-        });
-
-        return approvedRequestDtos;
+        return approvedRequests.Select(LeaveRequest.ToDto);
     }
 
     public async Task ApproveLeaveRequest(int id)
@@ -92,25 +66,13 @@ public class LeaveRequestService : ILeaveRequestService
     public async Task<LeaveRequestDto> GetById(int id)
     {
         var leaveRequest = await _leaveRequestRepo.GetQueryable()
-            .Include(r => r.Employee) // Load Employee data
+            .Include(r => r.Employee)
             .FirstOrDefaultAsync(r => r.ID == id);
 
         if (leaveRequest == null)
         {
-            return null; // or throw an exception based on your preference
+            throw new InvalidOperationException("Leave request not found");
         }
-
-        // Manual mapping
-        return new LeaveRequestDto
-        {
-            ID = leaveRequest.ID,
-            EmployeeID = leaveRequest.EmployeeID,
-            EmployeeName = leaveRequest.Employee?.Name ?? string.Empty,
-            EmployeeDepartment = leaveRequest.Employee?.Department ?? string.Empty,
-            StartDate = leaveRequest.StartDate,
-            EndDate = leaveRequest.EndDate,
-            Reason = leaveRequest.Reason,
-            Status = leaveRequest.Status
-        };
+        return LeaveRequest.ToDto(leaveRequest);
     }
 }

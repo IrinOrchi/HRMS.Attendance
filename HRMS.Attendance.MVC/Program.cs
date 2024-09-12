@@ -14,7 +14,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 builder.Services.AddScoped<ILeaveRequestService, LeaveRequestService>();
 builder.Services.AddScoped<IAttendanceService, AttendanceService>();
-builder.Services.AddScoped<IGenericRepository<ManageAttendence>, GenericRepository<ManageAttendence>>();
+builder.Services.AddScoped<IGenericRepository<ManageAttendance>, GenericRepository<ManageAttendance>>();
 builder.Services.AddScoped<IGenericRepository<LeaveRequest>, GenericRepository<LeaveRequest>>();
 builder.Services.AddScoped<IGenericRepository<Holiday>, GenericRepository<Holiday>>();
 

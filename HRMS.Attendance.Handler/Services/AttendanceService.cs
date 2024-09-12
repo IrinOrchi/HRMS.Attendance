@@ -1,96 +1,97 @@
 ﻿using HRMS.Attendance.AggregrateRoot.Models;
 using HRMS.Attendance.DTOs;
 using HRMS.Attendance.Repository;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
-
 
 public class AttendanceService : IAttendanceService
 {
-    private readonly IGenericRepository<ManageAttendence> _attendanceRepo;
-    private readonly IGenericRepository<LeaveRequest> _leaveRequestRepo;
+    private readonly IGenericRepository<ManageAttendance> _attendanceRepo;
     private readonly IGenericRepository<Employee> _employeeRepo;
+    private readonly IGenericRepository<LeaveRequest> _leaveRequestRepo;
 
-    public AttendanceService(IGenericRepository<ManageAttendence> attendanceRepo,
-                             IGenericRepository<LeaveRequest> leaveRequestRepo,
-                             IGenericRepository<Employee> employeeRepo)
+    public AttendanceService(IGenericRepository<ManageAttendance> attendanceRepo,
+                             IGenericRepository<Employee> employeeRepo,
+                             IGenericRepository<LeaveRequest> leaveRequestRepo)
     {
         _attendanceRepo = attendanceRepo;
-        _leaveRequestRepo = leaveRequestRepo;
         _employeeRepo = employeeRepo;
+        _leaveRequestRepo = leaveRequestRepo;
     }
 
-    public async Task<IEnumerable<AttendanceDto>> GetAllAttendances()
+    // 1. Get employee list for marking attendance
+    public async Task<IEnumerable<EmployeeDto>> GetEmployeeListForMarkAttendance()
     {
-        var attendances = await _attendanceRepo.GetAll();
+        var employees = await _employeeRepo.GetAll();
+
+        return employees.Select(e => e.ToDto());
+    }
+
+    // 2. Get attendance list with InTime
+    public async Task<IEnumerable<AttendanceDto>> GetAttendanceListWithInTime()
+    {
+        var attendances = await _attendanceRepo.GetQueryable()
+            .Where(a => a.InTime != null)
+            .Include(a => a.Employee) // Include the related Employee entity
+            .ToListAsync();
+
+        return attendances.Select(a => a.ToDto());
+    }
+
+    // 3. Get final attendance list with both InTime and OutTime
+    public async Task<IEnumerable<AttendanceDto>> GetFinalAttendanceList()
+    {
+        var attendances = await _attendanceRepo.GetQueryable()
+            .Include(a => a.Employee) // Ensure Employee details are included
+            .ToListAsync();
+
         return attendances.Select(a => new AttendanceDto
         {
             ID = a.ID,
-            EmployeeID = a.EmployeeID,
-            EmployeeName = a.Employee?.Name,
-            Department = a.Employee?.Department,
+            EmployeeName = a.Employee.Name, // Map the employee name
+            Department = a.Employee.Department, // Map the department
             InTime = a.InTime,
             OutTime = a.OutTime,
             TotalWorkingHours = a.TotalWorkingHours,
-            Status = a.Status,
-            AttendanceDate = a.AttendanceDate
-        }).ToList();
+            Status = a.Status
+        });
     }
 
-    public async Task<AttendanceDto> GetAttendanceById(int id)
-    {
-        var attendance = await _attendanceRepo.GetById(id);
-        if (attendance != null)
-        {
-            return new AttendanceDto
-            {
-                ID = attendance.ID,
-                EmployeeID = attendance.EmployeeID,
-                EmployeeName = attendance.Employee?.Name,
-                Department = attendance.Employee?.Department,
-                InTime = attendance.InTime,
-                OutTime = attendance.OutTime,
-                Status = attendance.Status,
-                AttendanceDate = attendance.AttendanceDate,
-                TotalWorkingHours = attendance.TotalWorkingHours
-            };
-        }
-        return null;
-    }
-
+    // 4. Mark attendance for an employee
     public async Task MarkAttendance(int employeeId)
     {
-        var currentDate = DateTime.Now;
-
-        var isOnLeave = await IsEmployeeOnLeave(employeeId, currentDate);
+        var employee = await _employeeRepo.GetById(employeeId);
+        var isOnLeave = await IsEmployeeOnLeave(employeeId, DateTime.Now);
 
         if (!isOnLeave)
         {
-            var attendance = new ManageAttendence
-            {
-                EmployeeID = employeeId,
-                InTime = DateTime.Now,
-                Status = "Present",
-                AttendanceDate = currentDate,
-                IsOnLeave = false
-            };
+            var attendance = ManageAttendance.CreateAttendance(employee);
             await _attendanceRepo.Add(attendance);
         }
     }
 
+    // 5. Mark exit time for an attendance
+    public async Task ExitAttendance(int attendanceId)
+    {
+        var attendance = await _attendanceRepo.GetById(attendanceId);
+        if (attendance != null)
+        {
+            attendance.OutTime = DateTime.Now;
+            await _attendanceRepo.Update(attendance);
+        }
+    }
+
+    // Check if employee is on leave
     public async Task<bool> IsEmployeeOnLeave(int employeeId, DateTime date)
     {
         var leaveRequests = await _leaveRequestRepo.GetQueryable()
-            .Where(lr => lr.EmployeeID == employeeId &&
-                         lr.Status == "Approved" &&
-                         lr.StartDate <= date &&
-                         lr.EndDate >= date)
+            .Where(lr => lr.EmployeeID == employeeId && lr.Status == "Approved" &&
+                         lr.StartDate <= date && lr.EndDate >= date)
             .ToListAsync();
 
         return leaveRequests.Any();
-    }
-
-    public async Task<IEnumerable<Employee>> GetAllEmployees()
-    {
-        return await _employeeRepo.GetAll();
     }
 }
